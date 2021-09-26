@@ -13,16 +13,22 @@ public class Weapon : MonoBehaviour
         this.enabled = false;
     }
 
+    private void OnEnable()
+    {
+        _animator.enabled = true;
+    }
+
     private void Start()
     {
         _player = GetComponentInParent<Player>();
         _animator ??= this.gameObject.GetComponent<Animator>();
-        _animator.enabled = true;
     }
+
     public void Hit()
     {
         _animator.SetTrigger("onAttack"); 
     }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.TryGetComponent(out Enemy enemy))

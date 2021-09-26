@@ -4,9 +4,9 @@ using UnityEngine.Events;
 [RequireComponent(typeof(PlayerStatsHandler))]
 public class Player : MonoBehaviour
 {
-    [SerializeField] private Weapon _currentWeapon;
     [SerializeField] private SpriteRenderer _sprite;
-    private PlayerStatsHandler _statsHandler;
+    [SerializeField] private PlayerStatsHandler _statsHandler;
+    private Weapon _currentWeapon;
 
     [HideInInspector] public UnityEvent Died;
     [HideInInspector] public UnityEvent Damaged;
@@ -14,13 +14,11 @@ public class Player : MonoBehaviour
 
     private void Start()
     {
-        if (_currentWeapon == null)
-        {
-            Debug.Log("There isn't first weapon Player.cs");
-            _currentWeapon = GetComponentInChildren<Weapon>();
-        }
         _sprite ??= GetComponent<SpriteRenderer>();
         _statsHandler ??= GetComponent<PlayerStatsHandler>();
+        _currentWeapon = GetComponentInChildren<Weapon>();
+        if (_currentWeapon == null)
+            Debug.Log("There isn't first weapon for Player.cs. Instal weapon prefab as child");
     }
 
     private void Update()
@@ -30,9 +28,9 @@ public class Player : MonoBehaviour
     }
     private void OnTriggerStay2D(Collider2D collision)
     {
-       _sprite.sortingOrder = (collision.transform.position.y > transform.position.y) ? 1 : -1;
-       
-        if (collision.gameObject.TryGetComponent(out Weapon weapon) && Input.GetMouseButtonDown(0)) //пофиксить
+        _sprite.sortingOrder = (collision.transform.position.y > transform.position.y) ? 1 : -1;
+
+        if (collision.gameObject.TryGetComponent(out Weapon weapon) && Input.GetMouseButtonDown(0))
             SetWeapon(weapon);
     }
 
@@ -52,13 +50,13 @@ public class Player : MonoBehaviour
 
     public void SetWeapon(Weapon weapon)
     {
-        _currentWeapon.transform.parent = null;
-       
+        _currentWeapon.gameObject.SetActive(false);
+
         _currentWeapon = weapon;
         _currentWeapon.transform.parent = gameObject.transform;
         _currentWeapon.transform.localPosition = new Vector2(0, 0.4f);
-        weapon.enabled = true;
-
+        _currentWeapon.enabled = true;
+        _currentWeapon.gameObject.SetActive(true);
     }
 
 }

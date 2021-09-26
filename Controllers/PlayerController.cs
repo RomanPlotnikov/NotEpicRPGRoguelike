@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(Player))]
@@ -35,9 +36,7 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         if (_joystick.Direction.magnitude > 0.05f)
-            MoveTo(-_joystick.Direction);
-        else
-            _animator.SetBool("isMoving", false);
+            MoveTo(_joystick.Direction);
     }
 
     private void MoveTo(Vector2 direction)
@@ -45,16 +44,24 @@ public class PlayerController : MonoBehaviour
         Vector3 rightView = new Vector3(1, 1, 1);
         Vector3 leftView = new Vector3(-1, 1, 1);
         transform.localScale = (direction.x > 0) ? rightView : leftView;
-       
-        _animator.SetBool("isMoving", true);
+
+        _animator.SetTrigger("onMove"); 
         _rigidbody.MovePosition((Vector2)transform.position + (direction * _player.Stats.Agility * Time.deltaTime));
     }
 
     private void OnPlayerDied()
-    { 
+    {
+        StartCoroutine(DisablePlayer());
+    }
+    
+    private IEnumerator DisablePlayer()
+    {
         _animator.SetTrigger("onDied");
-        _player.enabled = false;
-        this.enabled = false;
+
+        yield return new WaitForSeconds(1f);
+        this.gameObject.SetActive(false);
+        Time.timeScale = 0;// убрать
+        StopCoroutine(DisablePlayer());
     }
 
     private void OnPlayerDamaged()

@@ -4,21 +4,13 @@ using UnityEngine;
 [RequireComponent(typeof(Enemy))]
 public class PlayerPursuer : MonoBehaviour
 {
-    [SerializeField] private Player _target;
-    [SerializeField] private Rigidbody2D _rigidboody;
-    [SerializeField] private float _triggerRadius;
     [SerializeField] private Enemy _pursuer;
+    [SerializeField] private Player _target;
 
-    private void OnEnable()
-    {
-        _target.Died.AddListener(OnPlayerDied);
-    }
-    private void OnDisable()
-    {
-        _target.Died.RemoveListener(OnPlayerDied);
-    }
+    [SerializeField] private float _triggerRadius;
+    [SerializeField] private float _pursuitRadius;
 
-    private void Start()
+    private void Awake()
     {
         _pursuer = GetComponent<Enemy>();
 
@@ -29,11 +21,24 @@ public class PlayerPursuer : MonoBehaviour
         }
     }
 
+    private void OnEnable()
+    {
+        _target.Died.AddListener(OnPlayerDied);
+    }
+
+    private void OnDisable()
+    {
+        _target.Died.RemoveListener(OnPlayerDied);
+    }
+
     private void Update()
     {
         Vector3 targetDistance = _target.transform.position - transform.position;
-        if ((targetDistance).magnitude < _triggerRadius)
+
+        if (targetDistance.magnitude < _triggerRadius)
             StartCoroutine(FollowTheTrigger(targetDistance));
+        else if (targetDistance.magnitude < _pursuitRadius)
+            StopCoroutine(FollowTheTrigger());
     }
 
     private void OnCollisionStay2D(Collision2D collision)
@@ -46,12 +51,7 @@ public class PlayerPursuer : MonoBehaviour
 
     private IEnumerator FollowTheTrigger(Vector3 offset = new Vector3())
     {
-        Vector3 rightView = new Vector3(1, 1, 1);
-        Vector3 leftView = new Vector3(-1, 1, 1);
-        _pursuer.gameObject.transform.localScale = (offset.x > 0) ? rightView : leftView;
-
-        _rigidboody.MovePosition(transform.position + (offset.normalized * _pursuer.Speed * Time.deltaTime));
-
+        _pursuer.MoveTo(offset.normalized);
         yield return null;
     }
 

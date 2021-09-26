@@ -3,25 +3,38 @@ using UnityEngine.Events;
 
 public class Enemy : MonoBehaviour
 {
+    [SerializeField] private SpriteRenderer _sprite;
+    [SerializeField] private Rigidbody2D _rigidbody;
     [SerializeField] private Animator _animator;
-    [SerializeField] private float _speed;
-    [SerializeField] private float _damage;
+
     [SerializeField] private float _health;
+    [SerializeField] private float _damage;
+    [SerializeField] private float _speed;
     [SerializeField] private float _attackCooldown;
 
     [HideInInspector] public UnityEvent Died;
+
     private float _lastHitTime = 0f;
+
     public float Health => _health;
-    public float Speed => _speed;
 
     private void Start()
     {
+        _sprite ??= GetComponent<SpriteRenderer>();
+        _rigidbody ??= GetComponent<Rigidbody2D>();
         _animator ??= GetComponent<Animator>();
     }
 
     private void Update()
     {
         _lastHitTime += Time.deltaTime;
+    }
+
+    public void MoveTo(Vector3 direction)
+    {
+        _sprite.flipX = (direction.x > 0) ? true : false;
+        _animator.SetTrigger("onMove");
+        _rigidbody.MovePosition(transform.position + (direction * _speed * Time.deltaTime));
     }
 
     public void Attack(Player target)
