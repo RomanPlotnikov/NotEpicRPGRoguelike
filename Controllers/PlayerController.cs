@@ -4,10 +4,10 @@ using UnityEngine;
 [RequireComponent(typeof(Player))]
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] private Player _player;
     [SerializeField] private Rigidbody2D _rigidbody;
     [SerializeField] private Animator _animator;
     [SerializeField] private Joystick _joystick;
+    [SerializeField] private Player _player;
 
     private void OnEnable()
     {
@@ -22,9 +22,9 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
-        _player ??= GetComponent<Player>();
         _rigidbody ??= GetComponent<Rigidbody2D>();
         _animator ??= GetComponent<Animator>();
+        _player ??= GetComponent<Player>();
 
         if (_joystick == null)
         {
@@ -60,7 +60,6 @@ public class PlayerController : MonoBehaviour
 
         yield return new WaitForSeconds(1f);
         this.gameObject.SetActive(false);
-        Time.timeScale = 0;// убрать
         StopCoroutine(DisablePlayer());
     }
 

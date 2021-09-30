@@ -23,6 +23,4 @@ public class PlayerStatsHandler : PlayerStats
             Debug.Log(_currentHealth);
         }
     }
-
-    
 }

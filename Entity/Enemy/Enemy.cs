@@ -7,17 +7,16 @@ public class Enemy : MonoBehaviour
     [SerializeField] private Rigidbody2D _rigidbody;
     [SerializeField] private Animator _animator;
 
+    [SerializeField] private float _attackCooldown;
     [SerializeField] private float _health;
     [SerializeField] private float _damage;
     [SerializeField] private float _speed;
-    [SerializeField] private float _attackCooldown;
-
-    [HideInInspector] public UnityEvent Died;
 
     private float _lastHitTime = 0f;
 
+    [HideInInspector] public UnityEvent Died;
     public float Health => _health;
-
+    
     private void Start()
     {
         _sprite ??= GetComponent<SpriteRenderer>();
